@@ -1,6 +1,7 @@
 import click, pytest, sys
 from flask import Flask
 from flask.cli import with_appcontext, AppGroup
+from sqlalchemy.exc import IntegrityError
 
 from App.database import db, get_migrate
 from App.models import User, Student, Review
@@ -37,19 +38,19 @@ def create_user_command(username, password):
     create_user(username, password)
     print(f'{username} created!')
 
-@app.cli.command("create-student", help="Creates a student")
-@click.argument("fName", default="rob")
-@click.argument("lName", default="robbington")
-def create_student_command(fName, lName):
-    create_student(fName, lName)
-    print(f'{fName} {lName} created!')
+@app.cli.command('create-student', help="Creates a student")
+@click.argument('fname', default='rob')
+@click.argument('lname', default='robbington')
+def create_student_command(fname,lname):
+  create_student(fname, lname)
+  print(f'{fname} {lname} created!')
 
-@app.cli.command("get-student", help="Retrieves a Student")
-@click.argument('lName', default='bobbington')
-def get_student(lName):
-  bob = get_student_by_lName(lName)
+@app.cli.command('get-student', help="Retrieves a Student")
+@click.argument('lname', default='bobbington')
+def get_student(lname):
+  bob = get_student_by_lName(lname)
   if not bob:
-    print(f'{lName} not found!')
+    print(f'{lname} not found!')
     return
   print(bob)
 
@@ -60,24 +61,47 @@ def get_students():
   print(students)
 
 @app.cli.command('get-reviews')
-@click.argument('lName', default='robbington')
-def get_user_todos(lName):
-  bob = get_student_by_lName(lName)
+@click.argument('lname', default='bobbington')
+def get_user_todos(lname):
+  bob = get_student_by_lName(lname)
   if not bob:
-      print(f'{lName} not found!')
+      print(f'{lname} not found!')
       return
   print(bob.reviews)
 
 @app.cli.command('add-review')
-@click.argument('lName', default='bobbington')
+@click.argument('lname', default='bobbington')
 @click.argument('title', default='Excellent Work')
 @click.argument('text', default='Has topped the class')
-def add_review(lName, title, text):
-  bob = get_student_by_lName(lName)
+def add_review(lname, title, text):
+  bob = get_student_by_lName(lname)
   if not bob:
       print(f'{username} not found!')
       return
   create_review(bob, title, text)
+  print(f'Review\nTitle:{title}\nText:{text}\nStudent:{lname}\ncreated!')
+
+@app.cli.command('add-review2')
+@click.argument('lname', default='robbington')
+@click.argument('title', default='Inappropriate Misconduct')
+@click.argument('text', default='Very distractive and talkative in class')
+def add_review(lname, title, text):
+  bob = get_student_by_lName(lname)
+  if not bob:
+      print(f'{username} not found!')
+      return
+  create_review(bob, title, text)
+  print(f'Review\nTitle:{title}\nText:{text}\nStudent:{lname}\ncreated!')
+
+
+@app.cli.command('get-all-reviews')
+def get_students():
+  # gets all objects of a model
+  students = get_all_students()
+  for x in students:
+    print(x.reviews)
+    print('\n')
+  #print(students.reviews)
 
 
 # this command will be : flask user create bob bobpass

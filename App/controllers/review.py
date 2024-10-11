@@ -1,4 +1,4 @@
-from App.models import review
+from App.models import Review
 from App.database import db
 
 def create_review(student, title, text):

@@ -1,4 +1,4 @@
-from App.models import student
+from App.models import Student
 from App.database import db
 
 def create_student(fName, lName):
